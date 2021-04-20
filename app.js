@@ -11,6 +11,17 @@ const connection = mysql.createConnection({
     database:"employeeTracker_db"
 });
 
+let departments = [];
+let departmentChoices = [];
+let roles = [];
+let roleChoices = []
+let employees = [];
+let employeeChoices = [];
+
+
+
+
+
 
 const start = () => {
     inquirer.prompt ({
