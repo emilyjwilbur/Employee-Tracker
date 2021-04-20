@@ -22,8 +22,35 @@ let employeeChoices = [];
 
 
 
+const initialize = () => {
+    connection.query('SELECT * FROM departments', (err, res) => {
+      if (err) throw err;
+      departments = res;
+      departmentChoices = res.map((element) => element.name);
+    });
+  
+    connection.query('SELECT * FROM roles', (err, res) => {
+      if(err) throw err;
+      roles = res;
+      roleChoices = res.map((element) => element.title);
+    });
+  
+    connection.query('SELECT * FROM employees', (err, res) => {
+      if(err) throw err;
+      employees = res;
+      employeeChoices = res.map((element) => element.first_name + ' ' + element.last_name);
+    });
+  }
+
+
+
+
+
 
 const start = () => {
+
+    initialize();
+
     inquirer.prompt ({
         name:'choiceOne',
         type:'list',
@@ -34,23 +61,23 @@ const start = () => {
         .then(answer => {
             switch (answer.choiceOne) {
                 case 'View all employees':
-                 viewAllEmployees();
+                 viewData(employees);
                  break;
             
                 case 'View all departments':
-                 viewAllDepartments();
+                    viewData(employees);
                  break;
 
                 case 'View all roles':
-                  viewAllRoles();
+                    viewData(employees);
                   break;
 
                 case 'Add employee':
-                  addEmployee();
+                    viewData(employees);
                   break;
 
                   case 'Add department':
-                  addDepartment();
+                    viewData(employees);
                   break;
 
                   case 'Add role':
@@ -62,13 +89,15 @@ const start = () => {
                   break;
 
                 case 'Exit':
-                    return;
+                    process.exit(1);
             
                 default:
                 break;
               }
         })
 }
+
+
 
 
 const viewAllEmployees= ()  => {
@@ -100,6 +129,13 @@ const viewAllRoles= ()  => {
 
 }
 
+
+
+
+
+
+
+
 const addEmployee= () => {
     inquirer.prompt ([{
         name:'firstName',
@@ -115,9 +151,14 @@ const addEmployee= () => {
         name:'role',
         type:'rawlist',
         message:'What is the employees role?',
-        // choices: ['Sales Lead', 'Sales Person', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead']
-        choices: ['1', '2', '3', '4', '5', '6', '7']
+        choices: roleChoices
 
+    },
+    {
+        name: 'manager',
+        type: 'rawlist',
+        message: 'Who is the employees manager?',
+        choices: employeeChoices
     }
 ])
 
@@ -125,11 +166,11 @@ const addEmployee= () => {
     // when finished prompting, insert a new item into the db with that info
     connection.query(
       'INSERT INTO employees SET ?',
-      // QUESTION: What does the || 0 do?
       {
         first_name: answer.firstName,
         last_name: answer.lastName,
-        role_id: answer.role || 0
+        // role_id: answer.role || 0
+        // manager_id: employeeChoices.indexOf(answer.manager) +1
         
       },
       (err) => {
@@ -157,16 +198,12 @@ const addDepartment= () => {
     // when finished prompting, insert a new item into the db with that info
     connection.query(
       'INSERT INTO departments SET ?',
-      // QUESTION: What does the || 0 do?
       {
         name: answer.name,
-        
-        
       },
       (err) => {
         if (err) throw err;
         console.log('Your department was created successfully!');
-        // re-prompt the user for if they want to add another employee
         start();
       }
     );
@@ -191,15 +228,15 @@ const addRole= () => {
         name:'departmentId',
         type:'input',
         message:'What is the role department id?',
+        choices: departmentChoices
 
     }
 ])
 
 .then((answer) => {
-    // when finished prompting, insert a new item into the db with that info
+    
     connection.query(
       'INSERT INTO roles SET ?',
-  
       {
         title: answer.title,
         salary: answer.salary,
@@ -209,21 +246,43 @@ const addRole= () => {
       (err) => {
         if (err) throw err;
         console.log('Your role was created successfully!');
-       
         start();
       }
     );
- 
 });
-  
-   
-
 }
 
 
 
 const updateEmployeeRole= ()  => {
-    console.log('updateEmployeeRole');
+    
+    inquirer.prompt([{
+        name: 'employee',
+        type: 'list',
+        message: 'Which employee would you like to update?',
+        choices: employeeChoices
+    },
+    {
+        name: 'role',
+        type: 'list',
+        message: 'What is the new role?',
+        choices: roleChoices
+    }
+    ])
+        .then((answer) => {
+            // after prompt, insert new row into database with info
+            connection.query(
+                [
+                    // roleChoices.indexOf(answer.role) + 1,
+                    // employeeChoices.indexOf(answer.employee) + 1
+                ],
+                (err) => {
+                    if (err) throw err;
+                    console.log('Your employee was updated successfully!');
+                    start();
+                }
+            );
+        });
 
 };
 start();
