@@ -65,19 +65,19 @@ const start = () => {
                  break;
             
                 case 'View all departments':
-                    viewData(employees);
+                    viewData(departments);
                  break;
 
                 case 'View all roles':
-                    viewData(employees);
+                    viewData(roles);
                   break;
 
                 case 'Add employee':
-                    viewData(employees);
+                    addEmployee();
                   break;
 
                   case 'Add department':
-                    viewData(employees);
+                    addDepartment();
                   break;
 
                   case 'Add role':
@@ -89,7 +89,7 @@ const start = () => {
                   break;
 
                 case 'Exit':
-                    process.exit(1);
+                    return;
             
                 default:
                 break;
@@ -97,42 +97,40 @@ const start = () => {
         })
 }
 
-
-
-
-const viewAllEmployees= ()  => {
-    const query = 'SELECT * FROM employees';
-    connection.query(query, (err, res) => {
-      if (err) throw err;
-    console.table(res);
+const viewData = (data) => {
+    console.table(data);
     start();
-    });
-
-}
-
-const viewAllDepartments= ()  => {
-    const query = 'SELECT * FROM departments';
-    connection.query(query, (err, res) => {
-      if (err) throw err;
-    console.table(res);
-    start();
-    });
-}
-
-const viewAllRoles= ()  => {
-    const query = 'SELECT * FROM roles';
-    connection.query(query, (err, res) => {
-      if (err) throw err;
-    console.table(res);
-    start();
-    });
-
 }
 
 
+// const viewAllEmployees= ()  => {
+//     const query = 'SELECT * FROM employees';
+//     connection.query(query, (err, res) => {
+//       if (err) throw err;
+//     console.table(res);
+//     start();
+//     });
 
+// }
 
+// const viewAllDepartments= ()  => {
+//     const query = 'SELECT * FROM departments';
+//     connection.query(query, (err, res) => {
+//       if (err) throw err;
+//     console.table(res);
+//     start();
+//     });
+// }
 
+// const viewAllRoles= ()  => {
+//     const query = 'SELECT * FROM roles';
+//     connection.query(query, (err, res) => {
+//       if (err) throw err;
+//     console.table(res);
+//     start();
+//     });
+
+// }
 
 
 
@@ -169,8 +167,8 @@ const addEmployee= () => {
       {
         first_name: answer.firstName,
         last_name: answer.lastName,
-        // role_id: answer.role || 0
-        // manager_id: employeeChoices.indexOf(answer.manager) +1
+        role_id: roleChoices.indexOf(answer.role) + 1,
+        manager_id: employeeChoices.indexOf(answer.manager) +1
         
       },
       (err) => {
@@ -272,9 +270,10 @@ const updateEmployeeRole= ()  => {
         .then((answer) => {
             // after prompt, insert new row into database with info
             connection.query(
+                'UPDATE employees SET role_id = ? WHERE id = ?',
                 [
-                    // roleChoices.indexOf(answer.role) + 1,
-                    // employeeChoices.indexOf(answer.employee) + 1
+                    roleChoices.indexOf(answer.role) + 1,
+                    employeeChoices.indexOf(answer.employee) + 1
                 ],
                 (err) => {
                     if (err) throw err;
