@@ -51,7 +51,7 @@ const start = () => {
                   break;
 
                 case 'Exit':
-                    break;
+                    return;
             
                 default:
                 break;
@@ -71,11 +71,21 @@ const viewAllEmployees= ()  => {
 }
 
 const viewAllDepartments= ()  => {
-    
+    const query = 'SELECT * FROM departments';
+    connection.query(query, (err, res) => {
+      if (err) throw err;
+    console.table(res);
+    start();
+    });
 }
 
 const viewAllRoles= ()  => {
-    
+    const query = 'SELECT * FROM roles';
+    connection.query(query, (err, res) => {
+      if (err) throw err;
+    console.table(res);
+    start();
+    });
 
 }
 
@@ -118,12 +128,8 @@ const addEmployee= () => {
         start();
       }
     );
-console.log(answer.firstName);
-console.log(answer.lastName);
-console.log(answer.role);  
-});
   
-    console.log('addEmployee');
+});
 
 }
 
