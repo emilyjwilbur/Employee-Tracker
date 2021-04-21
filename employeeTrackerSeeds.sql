@@ -69,6 +69,5 @@ VALUES ("Accountant", 125000, 3);
 INSERT INTO roles (title, salary, department_id)
 VALUES ("Legal Team Lead", 250000, 4);
 
-
-
-
+INSERT INTO employees (first_name, last_name, role_id)
+VALUES ("Joe", "Jackson", 1);
